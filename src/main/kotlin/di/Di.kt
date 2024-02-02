@@ -1,8 +1,10 @@
 package di
 
 import com.google.gson.Gson
+import data.api.ApiLocalImpl
 import data.repository.RepositoryImpl
 import data.storage.StorageImpl
+import domain.interfaces.api.ApiLocal
 import domain.interfaces.repository.Repository
 import domain.interfaces.storage.Storage
 import java.io.File
@@ -14,7 +16,11 @@ private val pathName: String = "${System.getProperty("user.home")}/NotebookConso
 object Di {
 
     val repository: Repository by lazy {
-        RepositoryImpl(db = db)
+        RepositoryImpl(db = db, apiLocal = apiLocal)
+    }
+
+    private val apiLocal: ApiLocal by lazy {
+        ApiLocalImpl(fileDB = file)
     }
 
     private val file: File by lazy {

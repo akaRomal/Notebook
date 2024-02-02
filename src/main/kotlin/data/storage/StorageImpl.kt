@@ -1,7 +1,7 @@
 package data.storage
 
 import com.google.gson.Gson
-import domain.ERROR_LOAD_FROM_FILE
+import data.ERROR_LOAD_FROM_FILE
 import domain.interfaces.storage.Storage
 import domain.models.Note
 import domain.models.RootNotes
