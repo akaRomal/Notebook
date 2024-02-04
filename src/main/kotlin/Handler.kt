@@ -25,7 +25,7 @@ class Handler(private val repository: Repository) {
 
     private suspend fun commandProcessing(instruction: List<String>): ResponseMessages {
         val command: String = instruction[0]
-        var value: String = ""
+        var value = ""
         if (instruction.count() > 1) {
             value = instruction[1]
         }
@@ -100,8 +100,8 @@ class Handler(private val repository: Repository) {
 
     private suspend fun updateNote(text: String): ResponseMessages {
 
-        var textAboveInput = TEXT_ABOVE_INPUT_EDIT_NOTE.format(idUpdateNote)
-        var inputLineText = INPUT_LINE_TEXT_CREATE_TEXT
+        var textAboveInput = ""
+        var inputLineText: String = INPUT_LINE_TEXT_CREATE_TEXT
 
         if (isTitle) {
             temporaryTitle = text
@@ -119,8 +119,9 @@ class Handler(private val repository: Repository) {
             )
 
             temporaryTitle = ""
-            textAboveInput = TEXT_ABOVE_INPUT_EDITED_NOTE
+            textAboveInput = TEXT_ABOVE_INPUT_EDITED_NOTE.format(idUpdateNote)
             inputLineText = INPUT_LINE_TEXT_DEFAULT
+            idUpdateNote = null
         }
         isTitle = !isTitle
         return ResponseMessages(textAboveInput = textAboveInput, inputLineText = inputLineText)
@@ -136,7 +137,7 @@ class Handler(private val repository: Repository) {
 
     private suspend fun getNotes(searchParam: String = ""): ResponseMessages {
         val notes: List<Note> = repository.getNote(searchParam = searchParam)
-        var textAboveInput: String = ""
+        var textAboveInput = ""
         notes.forEach {
             textAboveInput += NOTES_OUTPUT_TEMPLATE.format(it.id, it.title, it.date, it.dataEdit ?: it.date)
         }
@@ -157,7 +158,7 @@ class Handler(private val repository: Repository) {
 
     private suspend fun sortBy(isCreate: Boolean): ResponseMessages {
         val notes: List<Note> = repository.sortedByDate(isCreate = isCreate)
-        var textAboveInput: String = ""
+        var textAboveInput = ""
         notes.forEach {
             textAboveInput += NOTES_OUTPUT_TEMPLATE.format(it.id, it.title, it.date, it.dataEdit ?: it.date)
         }
