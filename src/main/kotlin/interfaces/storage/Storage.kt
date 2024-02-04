@@ -1,6 +1,6 @@
-package domain.interfaces.storage
+package interfaces.storage
 
-import domain.models.Note
+import models.Note
 
 interface Storage {
     suspend fun loadNotes(): List<Note>

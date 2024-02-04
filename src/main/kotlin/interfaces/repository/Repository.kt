@@ -1,7 +1,7 @@
-package domain.interfaces.repository
+package interfaces.repository
 
-import domain.models.NewNote
-import domain.models.Note
+import models.NewNote
+import models.Note
 
 interface Repository {
     suspend fun addNote(newNote: NewNote): Boolean
@@ -16,7 +16,7 @@ interface Repository {
 
     suspend fun closeApp()
 
-    suspend fun exportNotes(filePathAndName: String)
+    suspend fun exportNotes(filePath: String)
 
     suspend fun sortedByDate(isCreate: Boolean = true): List<Note>
 

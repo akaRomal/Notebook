@@ -1,4 +1,4 @@
-package domain.models
+package models
 
 data class NewNote(
     val title: String,

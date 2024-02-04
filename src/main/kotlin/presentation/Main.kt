@@ -1,4 +1,0 @@
-package presentation
-
-fun main() {
-}

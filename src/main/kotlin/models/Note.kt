@@ -1,4 +1,4 @@
-package domain.models
+package models
 
 data class Note(
     val id: Int,

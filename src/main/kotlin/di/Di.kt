@@ -4,9 +4,9 @@ import com.google.gson.Gson
 import data.api.ApiLocalImpl
 import data.repository.RepositoryImpl
 import data.storage.StorageImpl
-import domain.interfaces.api.ApiLocal
-import domain.interfaces.repository.Repository
-import domain.interfaces.storage.Storage
+import interfaces.api.ApiLocal
+import interfaces.repository.Repository
+import interfaces.storage.Storage
 import java.io.File
 /**
  *  Импровизированный dependency injection

@@ -2,9 +2,9 @@ package data.storage
 
 import com.google.gson.Gson
 import data.ERROR_LOAD_FROM_FILE
-import domain.interfaces.storage.Storage
-import domain.models.Note
-import domain.models.RootNotes
+import interfaces.storage.Storage
+import models.Note
+import models.RootNotes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File

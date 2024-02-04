@@ -1,11 +1,11 @@
 package data.repository
 
 import data.ERROR_AUTO_SAVE
-import domain.interfaces.api.ApiLocal
-import domain.interfaces.repository.Repository
-import domain.interfaces.storage.Storage
-import domain.models.NewNote
-import domain.models.Note
+import interfaces.api.ApiLocal
+import interfaces.repository.Repository
+import interfaces.storage.Storage
+import models.NewNote
+import models.Note
 import kotlinx.coroutines.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -50,9 +50,7 @@ class RepositoryImpl(
         return withContext(Dispatchers.IO) {
             var lastId = 1
             if (temporaryNotes.isNotEmpty()) {
-                lastId = temporaryNotes.maxOf {
-                    it.id
-                }
+                lastId = temporaryNotes.maxOf { it.id } + 1
             }
             val note = Note(
                 id = lastId,
@@ -70,7 +68,13 @@ class RepositoryImpl(
                 .takeIf { it >= 0 }
                 ?.let { index ->
                     temporaryNotes.removeAt(index)
-                    temporaryNotes.add(index, note)
+                    temporaryNotes.add(index, Note(
+                        id = note.id,
+                        text = note.text,
+                        title = note.title,
+                        date = note.date,
+                        dataEdit = getDate()
+                    ))
                     return@withContext true
                 }
             false
@@ -92,7 +96,8 @@ class RepositoryImpl(
     override suspend fun getNote(searchParam: String): List<Note> {
         return withContext(Dispatchers.IO) {
             temporaryNotes.filter {
-                searchParam == "" || it.title.contains(searchParam) || it.text.contains(searchParam)
+                searchParam == "" || it.title.contains(other = searchParam, ignoreCase = true)
+                        || it.text.contains(other = searchParam, ignoreCase = true)
             }
         }
     }
@@ -104,9 +109,9 @@ class RepositoryImpl(
     /**
      * @throws Exception
      */
-    override suspend fun exportNotes(filePathAndName: String) {
+    override suspend fun exportNotes(filePath: String) {
         saveNotes(notes = temporaryNotes)
-        apiLocal.saveToFile(filePathAndName = filePathAndName)
+        apiLocal.saveToFile(filePath = filePath)
     }
 
     override suspend fun sortedByDate(isCreate: Boolean): List<Note> {
