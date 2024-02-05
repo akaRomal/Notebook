@@ -57,6 +57,7 @@ class RepositoryImpl(
                 title = newNote.title,
                 text = newNote.text,
                 date = getDate(),
+                dateEdit = getDate()
             )
             temporaryNotes.add(note)
         }
@@ -117,9 +118,9 @@ class RepositoryImpl(
     override suspend fun sortedByDate(isCreate: Boolean): List<Note> {
         return withContext(Dispatchers.IO) {
             if (isCreate) {
-                temporaryNotes.sortedBy { it.date }
+                temporaryNotes.sortedByDescending { it.date }
             } else {
-                temporaryNotes.sortedBy { it.dateEdit }
+                temporaryNotes.sortedByDescending { it.dateEdit }
             }
         }
     }
