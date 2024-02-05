@@ -73,7 +73,7 @@ class RepositoryImpl(
                         text = note.text,
                         title = note.title,
                         date = note.date,
-                        dataEdit = getDate()
+                        dateEdit = getDate()
                     ))
                     return@withContext true
                 }
@@ -111,7 +111,7 @@ class RepositoryImpl(
      */
     override suspend fun exportNotes(filePath: String) {
         saveNotes(notes = temporaryNotes)
-        apiLocal.saveToFile(filePath = filePath)
+        apiLocal.saveToFile(filePath = filePath, notes = temporaryNotes)
     }
 
     override suspend fun sortedByDate(isCreate: Boolean): List<Note> {
@@ -119,7 +119,7 @@ class RepositoryImpl(
             if (isCreate) {
                 temporaryNotes.sortedBy { it.date }
             } else {
-                temporaryNotes.sortedBy { it.dataEdit }
+                temporaryNotes.sortedBy { it.dateEdit }
             }
         }
     }

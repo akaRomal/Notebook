@@ -5,5 +5,5 @@ data class Note(
     val title: String,
     val text: String,
     val date: String,
-    val dataEdit: String? = null,
+    val dateEdit: String? = null,
 )

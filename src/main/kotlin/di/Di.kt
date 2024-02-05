@@ -20,7 +20,7 @@ object Di {
     }
 
     private val apiLocal: ApiLocal by lazy {
-        ApiLocalImpl(fileDB = file)
+        ApiLocalImpl()
     }
 
     private val file: File by lazy {

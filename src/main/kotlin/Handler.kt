@@ -139,7 +139,7 @@ class Handler(private val repository: Repository) {
         val notes: List<Note> = repository.getNote(searchParam = searchParam)
         var textAboveInput = ""
         notes.forEach {
-            textAboveInput += NOTES_OUTPUT_TEMPLATE.format(it.id, it.title, it.date, it.dataEdit ?: it.date)
+            textAboveInput += NOTES_OUTPUT_TEMPLATE.format(it.id, it.title, it.date, it.dateEdit ?: it.date)
         }
         return ResponseMessages(textAboveInput = textAboveInput)
     }
@@ -150,7 +150,7 @@ class Handler(private val repository: Repository) {
         id?.let { idLet ->
             val note: Note? = repository.getNote(id = idLet)
             note?.let {
-                textAboveInput = NOTE_OUTPUT_TEMPLATE.format(it.title, it.text, it.date, it.dataEdit ?: it.date)
+                textAboveInput = NOTE_OUTPUT_TEMPLATE.format(it.title, it.text, it.date, it.dateEdit ?: it.date)
             }
         }
         return ResponseMessages(textAboveInput = textAboveInput)
@@ -160,7 +160,7 @@ class Handler(private val repository: Repository) {
         val notes: List<Note> = repository.sortedByDate(isCreate = isCreate)
         var textAboveInput = ""
         notes.forEach {
-            textAboveInput += NOTES_OUTPUT_TEMPLATE.format(it.id, it.title, it.date, it.dataEdit ?: it.date)
+            textAboveInput += NOTES_OUTPUT_TEMPLATE.format(it.id, it.title, it.date, it.dateEdit ?: it.date)
         }
         return ResponseMessages(textAboveInput = textAboveInput)
     }
