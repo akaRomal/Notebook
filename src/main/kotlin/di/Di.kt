@@ -7,31 +7,20 @@ import data.storage.StorageImpl
 import interfaces.api.ApiLocal
 import interfaces.repository.Repository
 import interfaces.storage.Storage
+import org.koin.dsl.module
 import java.io.File
-/**
- *  Импровизированный dependency injection
- */
 
 private val pathName: String = "${System.getProperty("user.home")}/NotebookConsole.txt"
-object Di {
 
-    val repository: Repository by lazy {
-        RepositoryImpl(db = db, apiLocal = apiLocal)
-    }
+val appModule = module {
 
-    private val apiLocal: ApiLocal by lazy {
-        ApiLocalImpl()
-    }
+    single<Repository> { RepositoryImpl(db = get(), apiLocal = get()) }
 
-    private val file: File by lazy {
-        File(pathName)
-    }
+    single<ApiLocal> { ApiLocalImpl() }
 
-    private val db: Storage by lazy {
-        StorageImpl(gson = gson, file = file)
-    }
+    single<Storage> { StorageImpl(gson = get(), file = get()) }
 
-    private val gson: Gson by lazy {
-        Gson()
-    }
+    single<File> { File(pathName) }
+
+    single<Gson> { Gson() }
 }
