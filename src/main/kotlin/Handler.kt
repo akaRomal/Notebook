@@ -65,15 +65,6 @@ class Handler(private val repository: Repository) {
         return responseMessages
     }
 
-    private suspend fun exportNotes(path: String): ResponseMessages {
-        return try {
-            repository.exportNotes(filePath = path)
-            ResponseMessages(textAboveInput = MASSAGE_EXPORT_FILE_OK)
-        } catch (e: Exception) {
-            ResponseMessages(textAboveInput = MASSAGE_EXPORT_FILE_ERROR)
-        }
-    }
-
     private suspend fun createNote(text: String): ResponseMessages {
         var textAboveInput = ""
         var inputLineText = INPUT_LINE_TEXT_CREATE_TEXT
@@ -137,20 +128,12 @@ class Handler(private val repository: Repository) {
 
     private suspend fun getNotes(): ResponseMessages {
         val notes: List<Note> = repository.getNotes()
-        var textAboveInput = ""
-        notes.forEach {
-            textAboveInput += NOTES_OUTPUT_TEMPLATE.format(it.id, it.title, it.date, it.dateEdit)
-        }
-        return ResponseMessages(textAboveInput = textAboveInput)
+        return getTextAboveInputWithNotes(notes = notes)
     }
 
     private suspend fun getNotes(searchParam: String): ResponseMessages {
         val notes: List<Note> = repository.getNotes(searchParam = searchParam)
-        var textAboveInput = ""
-        notes.forEach {
-            textAboveInput += NOTES_OUTPUT_TEMPLATE.format(it.id, it.title, it.date, it.dateEdit)
-        }
-        return ResponseMessages(textAboveInput = textAboveInput)
+        return getTextAboveInputWithNotes(notes = notes)
     }
 
     private suspend fun getNote(idNote: String): ResponseMessages {
@@ -167,16 +150,29 @@ class Handler(private val repository: Repository) {
 
     private suspend fun sortBy(isCreate: Boolean): ResponseMessages {
         val notes: List<Note> = repository.sortedByDate(isCreate = isCreate)
-        var textAboveInput = ""
-        notes.forEach {
-            textAboveInput += NOTES_OUTPUT_TEMPLATE.format(it.id, it.title, it.date, it.dateEdit)
-        }
-        return ResponseMessages(textAboveInput = textAboveInput)
+        return getTextAboveInputWithNotes(notes = notes)
     }
 
     private suspend fun exit(): ResponseMessages {
         repository.closeApp()
         return ResponseMessages(textAboveInput = MASSAGE_STOP_APP)
+    }
+
+    private suspend fun exportNotes(path: String): ResponseMessages {
+        return try {
+            repository.exportNotes(filePath = path)
+            ResponseMessages(textAboveInput = MASSAGE_EXPORT_FILE_OK)
+        } catch (e: Exception) {
+            ResponseMessages(textAboveInput = MASSAGE_EXPORT_FILE_ERROR)
+        }
+    }
+
+    private fun getTextAboveInputWithNotes(notes: List<Note>):ResponseMessages{
+        var textAboveInput = ""
+        notes.forEach {
+            textAboveInput += NOTES_OUTPUT_TEMPLATE.format(it.id, it.title, it.date, it.dateEdit)
+        }
+        return ResponseMessages(textAboveInput = textAboveInput)
     }
 
     private suspend fun isIdNote(id: String): Boolean {
