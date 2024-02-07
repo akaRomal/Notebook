@@ -11,7 +11,7 @@ class Handler(private val repository: Repository) {
     private var temporaryTitle: String = ""
 
     suspend fun parser(task: String): ResponseMessages {
-        return if (isCommand) {
+        return if (isCommand()) {
             val instruction = task.split(" ", limit = 2)
             commandProcessing(instruction = instruction)
         } else {
@@ -32,27 +32,8 @@ class Handler(private val repository: Repository) {
         val responseMessages: ResponseMessages = when (command) {
             Commands.NOTES.value -> getNotes()
             Commands.NOTE.value -> getNote(idNote = value)
-            Commands.CREATE.value -> {
-                isCommand = !isCommand
-                ResponseMessages(
-                    textAboveInput = TEXT_ABOVE_INPUT_CREATE_NOTE,
-                    inputLineText = INPUT_LINE_TEXT_CREATE_TITLE
-                )
-            }
-
-            Commands.EDIT.value -> {
-                if (isIdNote(id = value)) {
-                    idUpdateNote = value.toInt()
-                    isCommand = !isCommand
-                    ResponseMessages(
-                        textAboveInput = TEXT_ABOVE_INPUT_EDIT_NOTE.format(value),
-                        inputLineText = INPUT_LINE_TEXT_CREATE_TITLE
-                    )
-                } else {
-                    ResponseMessages(textAboveInput = MASSAGE_EDIT_NOT_ID)
-                }
-            }
-
+            Commands.CREATE.value -> createNote()
+            Commands.EDIT.value -> updateNote(text = value)
             Commands.DELETE.value -> delete(idNote = value)
             Commands.SEARCH.value -> getNotes(searchParam = value)
             Commands.SORT_DATE.value -> sortBy(isCreate = true)
@@ -65,14 +46,23 @@ class Handler(private val repository: Repository) {
         return responseMessages
     }
 
-    private suspend fun createNote(text: String): ResponseMessages {
+    private suspend fun createNote(text: String = ""): ResponseMessages {
+
+        if (isCommand()) {
+            rotationIsCommand()
+            return ResponseMessages(
+                textAboveInput = TEXT_ABOVE_INPUT_CREATE_NOTE,
+                inputLineText = INPUT_LINE_TEXT_CREATE_TITLE
+            )
+        }
+
         var textAboveInput = ""
         var inputLineText = INPUT_LINE_TEXT_CREATE_TEXT
 
         if (isTitle) {
             temporaryTitle = text
         } else {
-            isCommand = !isCommand
+            rotationIsCommand()
 
             repository.addNote(
                 newNote = NewNote(
@@ -88,8 +78,20 @@ class Handler(private val repository: Repository) {
         return ResponseMessages(textAboveInput = textAboveInput, inputLineText = inputLineText)
     }
 
-
     private suspend fun updateNote(text: String): ResponseMessages {
+
+        if (isCommand()) {
+           return if (isIdNote(id = text)) {
+                idUpdateNote = text.toInt()
+                rotationIsCommand()
+                ResponseMessages(
+                    textAboveInput = TEXT_ABOVE_INPUT_EDIT_NOTE.format(text),
+                    inputLineText = INPUT_LINE_TEXT_CREATE_TITLE
+                )
+            } else {
+                ResponseMessages(textAboveInput = MASSAGE_EDIT_NOT_ID)
+            }
+        }
 
         var textAboveInput = ""
         var inputLineText: String = INPUT_LINE_TEXT_CREATE_TEXT
@@ -97,7 +99,7 @@ class Handler(private val repository: Repository) {
         if (isTitle) {
             temporaryTitle = text
         } else {
-            isCommand = !isCommand
+            rotationIsCommand()
 
             val note: Note = repository.getNote(idUpdateNote!!)!!
             repository.updateNote(
@@ -167,7 +169,7 @@ class Handler(private val repository: Repository) {
         }
     }
 
-    private fun getTextAboveInputWithNotes(notes: List<Note>):ResponseMessages{
+    private fun getTextAboveInputWithNotes(notes: List<Note>): ResponseMessages {
         var textAboveInput = ""
         notes.forEach {
             textAboveInput += NOTES_OUTPUT_TEMPLATE.format(it.id, it.title, it.date, it.dateEdit)
@@ -181,6 +183,12 @@ class Handler(private val repository: Repository) {
         } catch (e: NumberFormatException) {
             false
         }
+    }
+
+    private fun isCommand(): Boolean = isCommand
+
+    private fun rotationIsCommand() {
+        isCommand = !isCommand
     }
 
 }
