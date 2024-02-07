@@ -23,7 +23,7 @@ class RepositoryImpl(
         scope.launch {
             temporaryNotes.addAll(
                 try {
-                    getNotes()
+                    getNotesFromFile()
                 } catch (e: Exception) {
                     emptyList()
                 }
@@ -35,7 +35,7 @@ class RepositoryImpl(
                 val timeNow: Long = System.currentTimeMillis()
                 if (timeNow - timerAutoSave >= 300_000) {
                     try {
-                        saveNotes(notes = temporaryNotes)
+                        saveNotesToFlie(notes = temporaryNotes)
                         timerAutoSave = timeNow
                     } catch (e: Exception) {
                         println(ERROR_AUTO_SAVE)
@@ -69,13 +69,15 @@ class RepositoryImpl(
                 .takeIf { it >= 0 }
                 ?.let { index ->
                     temporaryNotes.removeAt(index)
-                    temporaryNotes.add(index, Note(
-                        id = note.id,
-                        text = note.text,
-                        title = note.title,
-                        date = note.date,
-                        dateEdit = getDate()
-                    ))
+                    temporaryNotes.add(
+                        index, Note(
+                            id = note.id,
+                            text = note.text,
+                            title = note.title,
+                            date = note.date,
+                            dateEdit = getDate()
+                        )
+                    )
                     return@withContext true
                 }
             false
@@ -94,10 +96,14 @@ class RepositoryImpl(
         }
     }
 
-    override suspend fun getNote(searchParam: String): List<Note> {
+    override suspend fun getNotes(): List<Note> {
+        return temporaryNotes
+    }
+
+    override suspend fun getNotes(searchParam: String): List<Note> {
         return withContext(Dispatchers.IO) {
             temporaryNotes.filter {
-                searchParam == "" || it.title.contains(other = searchParam, ignoreCase = true)
+                it.title.contains(other = searchParam, ignoreCase = true)
                         || it.text.contains(other = searchParam, ignoreCase = true)
             }
         }
@@ -111,7 +117,7 @@ class RepositoryImpl(
      * @throws Exception
      */
     override suspend fun exportNotes(filePath: String) {
-        saveNotes(notes = temporaryNotes)
+        saveNotesToFlie(notes = temporaryNotes)
         apiLocal.saveToFile(filePath = filePath, notes = temporaryNotes)
     }
 
@@ -129,14 +135,14 @@ class RepositoryImpl(
      * @throws Exception
      */
     override suspend fun closeApp() {
-        saveNotes(notes = temporaryNotes)
+        saveNotesToFlie(notes = temporaryNotes)
     }
 
-    private suspend fun getNotes(): List<Note> {
+    private suspend fun getNotesFromFile(): List<Note> {
         return db.loadNotes()
     }
 
-    private suspend fun saveNotes(notes: List<Note>): Boolean {
+    private suspend fun saveNotesToFlie(notes: List<Note>): Boolean {
         return db.saveNotes(notes = notes)
     }
 

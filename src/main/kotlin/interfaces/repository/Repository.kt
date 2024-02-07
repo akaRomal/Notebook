@@ -10,7 +10,9 @@ interface Repository {
 
     suspend fun deleteNote(id: Int): Boolean
 
-    suspend fun getNote(searchParam: String): List<Note>
+    suspend fun getNotes(): List<Note>
+
+    suspend fun getNotes(searchParam: String): List<Note>
 
     suspend fun getNote(id: Int): Note?
 

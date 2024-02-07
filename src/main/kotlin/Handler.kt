@@ -135,8 +135,17 @@ class Handler(private val repository: Repository) {
             ResponseMessages(textAboveInput = ERROR_MASSAGE_NOTE_ID)
     }
 
-    private suspend fun getNotes(searchParam: String = ""): ResponseMessages {
-        val notes: List<Note> = repository.getNote(searchParam = searchParam)
+    private suspend fun getNotes(): ResponseMessages {
+        val notes: List<Note> = repository.getNotes()
+        var textAboveInput = ""
+        notes.forEach {
+            textAboveInput += NOTES_OUTPUT_TEMPLATE.format(it.id, it.title, it.date, it.dateEdit)
+        }
+        return ResponseMessages(textAboveInput = textAboveInput)
+    }
+
+    private suspend fun getNotes(searchParam: String): ResponseMessages {
+        val notes: List<Note> = repository.getNotes(searchParam = searchParam)
         var textAboveInput = ""
         notes.forEach {
             textAboveInput += NOTES_OUTPUT_TEMPLATE.format(it.id, it.title, it.date, it.dateEdit)
